@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration 
+PUBLIC "-//-mybatis.org// DTD Config 3.0//En" 
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+	 <typeAliases >
+	
+		<typeAlias type="team_project.post.DTO.PostDto" alias="postDto"/>
+		<typeAlias type="team_project.post.DTO.CommDto" alias="commDto"/>
+		<typeAlias type="team_project.member.DTO.MemberDto" alias="memDto"/>
+		<typeAlias type="team_project.food.DTO.FoodDto" alias="foodDto"/>
+		<typeAlias type="team_project.admin.DTO.AdminDto" alias="adminDto"/>
+
+	</typeAliases> 
+	
+	<mappers>
+		<mapper resource="team_project/resource/foodMapper.xml"/>
+		<mapper resource="team_project/resource/postMapper.xml"/>
+		<mapper resource="team_project/resource/memberMapper.xml"/>
+		<mapper resource="team_project/resource/commMapper.xml"/>
+		<mapper resource="team_project/resource/adminMapper.xml"/>
+	</mappers>
+</configuration>

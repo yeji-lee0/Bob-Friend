@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+PUBLIC "-//-mybatis.org// DTD Mapper 3.0//En" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="adminMapper">
+	
+	<!-- 관리자정보 수정. 아이디에 해당하는 관리자 정보 수정 -->
+	<!-- 관리자정보 수정. 아이디에 해당하는 관리자 정보 수정 -->
+	<update id="updateAdmin" parameterType="adminDto"  >
+		 UPDATE admin
+		 SET pwd=#{pwd}, 
+		 	name=#{name}, 
+		 	part=#{part}, 
+		 	email=#{email}, 
+		 	phone=#{phone}
+        WHERE id=#{id}
+	</update>
+	
+	<!-- 관리자 승인 -->
+	<update id="setApproval" parameterType="String">
+		update admin
+        set approval = 1
+        where id = #{id}
+	</update>
+
+	<!-- 관리자 목록 -->
+	<select id="selectAdmins" parameterType="map" resultType="adminDto">
+		SELECT *
+		FROM (
+		    SELECT a.*, ROWNUM rnum
+		    FROM (
+		        SELECT * 
+		        FROM admin 
+		        ORDER BY reg_date DESC
+		    ) a
+		    WHERE ROWNUM &lt;= #{endRow}
+		)
+		WHERE rnum > #{startRow}
+	</select>
+	
+	<!-- 관리자 수 -->
+	<select id="countAdmins" resultType="int">
+		select count(id)
+		from admin
+	</select>
+	
+	<!-- 아이디 중복 확인 -->
+	<select id="checkIdDuplicate" parameterType="String" resultType="int">
+    	SELECT COUNT(*) FROM admin WHERE id = #{id}
+	</select>
+	
+	<!-- 회원가입. db에 관리자 정보 넣기 -->
+	<insert id="insertOneAdmin" parameterType="adminDto">
+		insert into admin(id, pwd, name, gender, part, email, phone, approval)
+		values(#{id}, #{pwd}, #{name}, #{gender}, #{part}, #{email}, #{phone}, #{approval})
+	</insert>
+	
+	<!-- 로그인. 아이디와 비밀번호에 맞는 관리자정보 반환 -->
+	<select id="checkLogin" parameterType="map" resultType="adminDto">
+		select *
+		from admin
+		where id=#{id} and pwd=#{pwd}
+	</select>
+	
+	<!-- 관리자 음식 -->
+	<select id="getAllList" resultType="foodDto">
+    	SELECT 
+        f.city,f.f_name,f.f_img,f.f_des,
+        r.country,r.lat,r.lng 
+    FROM SCOTT.FOOD f
+    JOIN SCOTT.REGION r ON f.city = r.city
+	</select>
+	
+	<!-- 도시선택에 따른 음식 목록-->
+	<select id="getFoodByRegion" parameterType="map" resultType="foodDto">
+     SELECT 
+        f.city, f.f_name, f.f_img, f.f_des,
+        r.country, r.lat, r.lng 
+    FROM SCOTT.FOOD f
+    JOIN SCOTT.REGION r ON f.city = r.city
+    WHERE r.city = #{city} AND r.country = #{country}
+	</select>
+	
+	<!-- 관리자 나라추가 -->
+	<select id="insertRegion" parameterType="foodDto" resultType="foodDto">
+    	insert into region_food(country,city)
+    	VALUES (#{country}, #{city})
+	</select>
+	
+	<!-- 음식 추가 -->
+	<select id="insertFood"  parameterType="foodDto" resultType="foodDto">
+		insert into region_food(country,city,f_name)
+		VALUES (#{country}, #{city},#{f_name})
+	</select>
+	
+	<!-- 음식수정 -->
+	<select id="updateFoodRegion" parameterType="foodDto" resultType="foodDto">
+		update region_food
+		set country = #{country},
+			city = #{city}
+		where f_name = #{f_name}
+	</select>
+	
+	<select id="updateFood" parameterType="foodDto" resultType="foodDto">
+		update food
+		set f_img = #{f_img},
+			f_des = #{f_des},
+			city = #{city}
+		where f_name = #{f_name}
+	</select>
+	
+	<select id="deleteFood" parameterType="String" >
+		DELETE FROM food
+		WHERE f_name = #{f_name}
+	</select>
+	
+	<select id="deleteCity" parameterType="String" >
+		DELETE FROM region
+		WHERE city = #{city}
+	</select>
+</mapper>

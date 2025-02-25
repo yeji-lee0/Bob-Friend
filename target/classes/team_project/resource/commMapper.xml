@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="commMapper"> 
+ 
+ 	<select id="getAllComments" resultType="commDto" parameterType="int">
+ 		select * from comm 
+ 		WHERE post_id=#{post_id} 
+ 		order by upload_time desc
+ 	</select>
+ 	
+ 	<insert id="insertComm" parameterType="commDto">
+ 		insert into comm (post_id, writter, content)
+ 		values (#{post_id},#{writter},#{content})
+ 	</insert>
+ 	
+ 	<update id="updateComm" parameterType="commDto">
+ 		 update comm
+ 		 SET content = #{content}
+   		 WHERE comm_id = #{comm_id} AND post_id = #{post_id} AND writter = #{writter}
+ 	</update>
+ 	
+ 	<delete id="deleteComm" parameterType="commDto">
+   	DELETE FROM comm
+    WHERE post_id = #{post_id}
+    AND writter = #{writter}
+    AND comm_id = #{comm_id}
+    </delete>
+</mapper>
+
+<!--getAllComments
+insertComm
+updateComm
+deleteComm-->

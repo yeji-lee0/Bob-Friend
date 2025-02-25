@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+PUBLIC "-//-mybatis.org// DTD Mapper 3.0//En" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="foodMapper">
+
+	<select id="getCountrylist" resultType="foodDto">
+		select DISTINCT country,lat,lng from region_food_view	
+	</select>
+	
+	<select id="getCitylistByCountry" resultType="String" parameterType="String">
+		select DISTINCT city from region_food_view
+		where country=#{country}
+	</select>
+	
+	<select id="getFoodlistByCity" resultType="foodDto" parameterType="String">
+		select country,city,f_name,f_des,f_img from region_food_view
+		where country = #{country} AND city = #{city}
+	</select>
+	
+	
+</mapper>
+

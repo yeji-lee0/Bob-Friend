@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+PUBLIC "-//-mybatis.org// DTD Mapper 3.0//En" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="postMapper">
+
+	<!-- 그냥 모든 글 보기 -->
+	<select id="selectAllPost" resultType="postDto">
+		select * from post 
+		order by post_id desc
+	</select>
+	
+	<!-- 지역, 메뉴로 글 검색 -->
+	<select id="selectPostByCityF_name" parameterType="postDto" resultType="postDto">
+		select *
+		from post
+		where city like concat(concat('%', #{city}),'%')
+			and f_name like concat(concat('%', #{f_name}),'%')
+		order by post_id desc
+	</select>
+	
+	<!-- 지역으로 글 검색 -->
+	<select id="selectPostByCity" parameterType="String"
+		resultType="postDto">
+		select *
+		from post
+		where city like concat(concat('%', #{city}),'%')
+		order by post_id desc
+	</select>
+	
+	<!-- 메뉴로 글 검색 -->
+	<select id="selectPostByF_name" parameterType="String"
+		resultType="postDto">
+		select *
+		from post
+		where f_name like concat(concat('%', #{f_name}),'%')
+		order by post_id desc
+	</select>
+
+	<!-- 글 상세 보기 -->
+	<select id="selectOnePost" parameterType="int" resultType="postDto">
+		select *
+		from post
+		where POST_ID=#{post_id}
+	</select>
+	
+	<!-- 글 쓰기 -->
+	<insert  id="insertPost" parameterType="postDto" useGeneratedKeys="true" keyProperty="post_id" keyColumn="post_id">
+		insert into post(city, f_name, writer_id, title, content, notice, flight_number) 
+		values(#{city}, #{f_name}, #{writer_id}, #{title},#{content}, #{notice}, #{flight_number})
+	</insert >
+
+	<!-- 글 수정하기 -->
+	<select id="updatePost" parameterType="postDto" resultType="int">
+		update post
+		set city = #{city},
+			f_name = #{f_name},
+			title = #{title},
+			content = #{content},
+			notice=#{notice},
+			flight_number=#{flight_number}
+		where post_id = #{post_id}
+	</select>
+	
+	<!-- 글 삭제 -->
+	<select id="deletePost" parameterType="int" resultType="int">
+		delete from post 
+		where post_id = #{post_id}
+	</select>
+	
+	
+	<!-- 게시판 페이징 구현 -->
+	<!-- 인덱스로 글 가져오기 -->
+	<select id="selectPostsByIndex" parameterType="map" resultType="postDto">
+		SELECT * 
+		FROM (
+	            SELECT p.*, ROWNUM rnum
+	            FROM (
+	                SELECT * FROM post ORDER BY post_id DESC
+	            ) p
+	            WHERE ROWNUM &lt;= #{endRow}
+        	)
+		WHERE rnum >= #{startRow}
+	</select>
+
+	<!-- 총 글개수 -->
+	<select id="countPosts" resultType="int">
+		select count(post_id)
+		from post
+	</select>
+	
+	<!-- 검색어, 인덱스로 글 가져오기 -->
+	<select id="getPostsByCityF_nameIndex" parameterType="map" resultType="postDto">
+		SELECT *
+		FROM (
+		    SELECT p.*, ROWNUM rnum
+		    FROM (
+		        SELECT * 
+		        FROM post 
+		        WHERE city LIKE CONCAT(CONCAT('%', #{city}), '%')
+		          AND f_name LIKE CONCAT(CONCAT('%', #{f_name}), '%')  
+		        ORDER BY 
+		        		CASE 
+                			WHEN notice = 1 THEN 0 
+                			ELSE 1 
+            				END, 
+            			post_id DESC
+		    ) p
+		    WHERE ROWNUM &lt;= #{endRow}
+		)
+		WHERE rnum > #{startRow}
+	</select>
+	
+	<!-- 검색 결과 글 개수 -->
+	<select id="countPostsBySearch" parameterType="map" resultType="int">
+		select count(post_id)
+		from post
+		where city LIKE CONCAT(CONCAT('%', #{city}), '%')
+		          AND f_name LIKE CONCAT(CONCAT('%', #{f_name}), '%')
+	</select>
+</mapper>
